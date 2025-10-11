@@ -1,5 +1,5 @@
 import requests
-import urllib.parse
+from bs4 import BeautifulSoup
 
 # Define the base URL
 base_url = "https://commission.europa.eu/news-and-media/news_en?"
@@ -10,20 +10,15 @@ params = {
     "page": "0"
 }
 
-# URL-encode the query string
-encoded_query_string = urllib.parse.urlencode(params)
-
-# Combine the base URL with the encoded query string
-url = base_url + encoded_query_string
-
 # Define the headers
 headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"}
 
 # Make the GET request
-response = requests.get(url, headers=headers)
+response = requests.get(base_url, params=params, headers=headers)
 
-print(response.content.decode('UTF-8'))
+# Parse the HTML content using BeautifulSoup
+soup = BeautifulSoup(response.content, 'html.parser')
 
-# Write the response content to a file
-with open("news.html", "w") as f:
-    f.write(response.content.decode('UTF-8'))
+# Find the total number of news articles with error handling
+total_news_tag = soup.find('div', class_='ecl-u-border-bottom ecl-u-border-width-2 ecl-u-d-flex ecl-u-justify-content-between ecl-u-align-items-end')
+print(total_news_tag)
