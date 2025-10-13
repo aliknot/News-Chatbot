@@ -19,15 +19,14 @@ response = requests.get(base_url, params=params, headers=headers)
 # Parse the HTML content using BeautifulSoup
 soup = BeautifulSoup(response.content, 'html.parser')
 
-# Find the parent div first
+# Find the parent div for news count (kept as requested)
 news_count_wrapper = soup.find('div', class_='ecl-u-border-bottom ecl-u-border-width-2 ecl-u-d-flex ecl-u-justify-content-between ecl-u-align-items-end')
 
-# Now, search for the h4 and spans within that parent div
+# Search for the h4 and spans within that parent div
 if news_count_wrapper:
     h4_tag = news_count_wrapper.find('h4', class_='ecl-u-type-heading-4 ecl-u-mb-s')
     
     if h4_tag:
-        # Check if there are any span tags inside the h4
         span_tags = h4_tag.find_all('span')
         if len(span_tags) >= 2:
             total_news_text = span_tags[-1].text.strip()
@@ -43,11 +42,18 @@ else:
 # Find all the news article containers
 article_containers = soup.find_all('div', class_='ecl-content-item-block__item')
 
-# Filter the containers to include only those without 'ecl-col-l-6' in their class list
-filtered_containers = [
-    container for container in article_containers 
-    if 'ecl-col-l-6' not in container.get('class', [])
-]
+# Create a final list to store only the valid article objects
+valid_articles = []
+for container in article_containers:
+    # Find the article within the container and check if it exists
+    article = container.find('article', class_='ecl-content-item')
+    
+    # Check if the container has the unwanted class AND if the article was found
+    if 'ecl-col-l-6' not in container.get('class', []) and article:
+        valid_articles.append(article)
+
+print(f"Found a total of {len(article_containers)} article containers.")
+print(f"Filtered to {len(valid_articles)} valid news articles.")
 
 # Define the output file name
 output_file = 'eu_commission_news.txt'
@@ -56,29 +62,27 @@ output_file = 'eu_commission_news.txt'
 with open(output_file, 'w', encoding='utf-8') as f:
     f.write("--- News Articles from European Commission ---\n\n")
 
-    # Loop through the filtered containers to extract the articles
-    for i, container in enumerate(filtered_containers, 1):
-        article = container.find('article', class_='ecl-content-item')
-        if article:
-            # Extract the title and link
-            title_tag = article.find('div', class_='ecl-content-block__title').find('a')
-            title = title_tag.text.strip()
-            link = title_tag['href']
+    # Loop through the valid articles and write details to the file, starting the index from 1
+    for i, article in enumerate(valid_articles, 1):
+        # Extract the title and link
+        title_tag = article.find('div', class_='ecl-content-block__title').find('a')
+        title = title_tag.text.strip()
+        link = title_tag['href']
 
-            # Extract the publication date
-            date_tag = article.find('time')
-            date = date_tag.text.strip() if date_tag else "No date available."
+        # Extract the publication date
+        date_tag = article.find('time')
+        date = date_tag.text.strip() if date_tag else "No date available."
 
-            # Extract the description
-            description_tag = article.find('div', class_='ecl-content-block__description')
-            description = description_tag.text.strip() if description_tag else "No description available."
-            
-            # Write the extracted information to the file
-            f.write(f"Article {i}:\n")
-            f.write(f"Title: {title}\n")
-            f.write(f"Link: {link}\n")
-            f.write(f"Date: {date}\n")
-            f.write(f"Description: {description}\n")
-            f.write("-" * 30 + "\n\n")
+        # Extract the description
+        description_tag = article.find('div', class_='ecl-content-block__description')
+        description = description_tag.text.strip() if description_tag else "No description available."
+        
+        # Write the extracted information to the file
+        f.write(f"Article {i}:\n")
+        f.write(f"Title: {title}\n")
+        f.write(f"Link: {link}\n")
+        f.write(f"Date: {date}\n")
+        f.write(f"Description: {description}\n")
+        f.write("-" * 30 + "\n\n")
 
-print(f"Successfully scraped {len(filtered_containers)} news articles and saved them to {output_file}.")
+print(f"Successfully scraped {len(valid_articles)} news articles and saved them to {output_file}.")
