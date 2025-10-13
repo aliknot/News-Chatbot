@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import math
+import csv
 
 # Define the base URL and headers
 base_url = "https://commission.europa.eu/news-and-media/news_en"
@@ -61,9 +62,7 @@ if __name__ == "__main__":
 
         total_news_tag = soup.find('div', class_='ecl-u-border-bottom ecl-u-border-width-2 ecl-u-d-flex ecl-u-justify-content-between ecl-u-align-items-end').find('h4', class_='ecl-u-type-heading-4 ecl-u-mb-s')
         
-        # This is the corrected line
         total_news_text = total_news_tag.find_all('span')[-1].text
-        # Use regex to find all digits in the string
         total_news_count = int("".join(filter(str.isdigit, total_news_text)))
         pages_to_crawl = math.ceil(total_news_count / 10)
         
@@ -71,33 +70,34 @@ if __name__ == "__main__":
         print(f"Total pages to crawl: {pages_to_crawl}")
         print("-" * 30)
 
+        # List to store all articles data
+        all_articles_data = []
+        
+        # Step 2: Loop through all pages to scrape articles
+        for page_num in range(pages_to_crawl):
+            print(f"Scraping articles from Page {page_num + 1}...")
+            page_content = get_page_content(page_num, date_range)
+            soup = BeautifulSoup(page_content, 'html.parser')
+            
+            articles = parse_articles_from_soup(soup)
+            
+            # Step 3: Extract data and store in list
+            for article in articles:
+                data = extract_article_data(article)
+                data['page'] = page_num + 1 # Add the page number
+                all_articles_data.append(data)
+
         # Define the output file name
-        output_file = 'eu_commission_news_all.txt'
+        output_file = 'eu_commission_news_all.csv'
 
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write("--- All News Articles from European Commission ---\n\n")
+        # Write the data to a CSV file
+        with open(output_file, 'w', newline='', encoding='utf-8') as f:
+            fieldnames = ['page', 'title', 'link', 'date', 'description']
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(all_articles_data)
 
-            # Step 2: Loop through all pages to scrape articles
-            for page_num in range(pages_to_crawl):
-                f.write(f"\n======== Page {page_num + 1} ========\n\n")
-                
-                print(f"Scraping articles from Page {page_num + 1}...")
-                page_content = get_page_content(page_num, date_range)
-                soup = BeautifulSoup(page_content, 'html.parser')
-                
-                articles = parse_articles_from_soup(soup)
-                
-                # Step 3: Write the extracted data to the file
-                for i, article in enumerate(articles, 1):
-                    data = extract_article_data(article)
-                    f.write(f"Article {i}:\n")
-                    f.write(f"Title: {data['title']}\n")
-                    f.write(f"Link: {data['link']}\n")
-                    f.write(f"Date: {data['date']}\n")
-                    f.write(f"Description: {data['description']}\n")
-                    f.write("-" * 30 + "\n\n")
-
-        print(f"\nSuccessfully scraped all articles and saved to {output_file}.")
+        print(f"\nSuccessfully scraped {len(all_articles_data)} articles and saved them to {output_file}.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
