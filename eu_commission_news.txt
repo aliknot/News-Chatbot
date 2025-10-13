@@ -1,79 +1,72 @@
 --- News Articles from European Commission ---
 
-Article 1:
+Article 5:
 Title: Mounting risks threaten survival of wild European pollinators – IUCN Red List
 Link: https://environment.ec.europa.eu/news/mounting-risks-threaten-survival-wild-european-pollinators-2025-10-11_en
 Date: 11 October 2025
 Description: Nearly 100 additional wild bee species in Europe have been classified as threatened in a new assessment for the IUCN Red List of Threatened Species.
 ------------------------------
 
-Article 2:
+Article 6:
 Title: Energy Efficiency Directive: Advancing the EU’s energy efficiency goals
 Link: https://energy.ec.europa.eu/news/energy-efficiency-directive-advancing-eus-energy-efficiency-goals-2025-10-10_en
 Date: 10 October 2025
 Description: Tomorrow (11 October) marks the deadline for EU countries to transpose key provisions of the Energy Efficiency Directive, aimed at advancing the EU’s energy efficiency goals.
 ------------------------------
 
-Article 3:
+Article 7:
 Title: EU’s Leading Role Instrumental in advancing sustainable and inclusive science, technology, and innovation
 Link: https://research-and-innovation.ec.europa.eu/news/all-research-and-innovation-news/eus-leading-role-instrumental-advancing-sustainable-and-inclusive-science-technology-and-innovation-2025-10-10_en
 Date: 10 October 2025
 Description: G20 reinforces international collaboration in science, technology, and innovation (STI) as a cornerstone for addressing global challenges.
 ------------------------------
 
-Article 4:
+Article 8:
 Title: President von der Leyen travels to the Western Balkans
 Link: https://enlargement.ec.europa.eu/news/president-von-der-leyen-travels-western-balkans-2025-10-10_en
 Date: 10 October 2025
 Description: The President of the European Commission, Ursula von der Leyen, will travel to the Western Balkans on Sunday. This will be the occasion to reiterate the EU’s support for the region’s EU accession path and gradual access to the Single Market, and to discuss the EU’s €6 billion Growth Plan for the...
 ------------------------------
 
-Article 5:
+Article 9:
 Title: Fishing vessel engine power - new Commission guidance for monitoring and control
 Link: https://oceans-and-fisheries.ec.europa.eu/news/fishing-vessel-engine-power-new-commission-guidance-monitoring-and-control-2025-10-10_en
 Date: 10 October 2025
 Description: The European Commission has published two technical guidance documents to support EU countries in improving their systems for monitoring and controlling the engine power of fishing vessels.
 ------------------------------
 
-Article 6:
+Article 10:
 Title: Global Gateway Forum: EU and EDFI sign three guarantee agreements to mobilise private investments in partner countries
 Link: https://international-partnerships.ec.europa.eu/news-and-events/news/global-gateway-forum-eu-and-edfi-sign-three-guarantee-agreements-mobilise-private-investments-2025-10-10_en
 Date: 10 October 2025
 Description: Today at the Global Gateway Forum, the European Commission and European Development Finance Institutions announced three new guarantee agreements to mobilise private finance for development.
 ------------------------------
 
-Article 7:
+Article 11:
 Title: OLAF Acting Director-General meets key Albanian authorities to strengthen cooperation on protecting EU financial interests
 Link: https://anti-fraud.ec.europa.eu/media-corner/news/olaf-acting-director-general-meets-key-albanian-authorities-strengthen-cooperation-protecting-eu-2025-10-10_en
 Date: 10 October 2025
 Description: On the margins of the 2025 AFCOS Seminar held in Tirana on 8–9 October, OLAF’s Acting Director-General Salla Saastamoinen met with senior Albanian counterparts to discuss ongoing cooperation in protecting the EU's financial interests and supporting Albania’s progress towards EU accession.
 ------------------------------
 
-Article 8:
+Article 12:
 Title: The Commission moves forward on cloud sovereignty with a EUR 180 million tender
 Link: /news-and-media/news/commission-moves-forward-cloud-sovereignty-eur-180-million-tender-2025-10-10_en
 Date: 10 October 2025
 Description: As part of its efforts to strengthen its cloud sovereignty, the European Commission is procuring up to EUR 180 million of sovereign cloud services.
 ------------------------------
 
-Article 9:
+Article 13:
 Title: Global Gateway Forum: EU for strategic expansion of the Medusa Submarine Cable System to the Middle East
 Link: https://north-africa-middle-east-gulf.ec.europa.eu/news/global-gateway-forum-eu-strategic-expansion-medusa-submarine-cable-system-middle-east-2025-10-10_en
 Date: 10 October 2025
 Description: The strategic expansion of the Medusa Submarine Cable System is key for further enhancing connectivity in the Mediterranean. At today’s panel discussion organised by the European Commission’s Directorate-General for the Middle East, North Africa and Gulf (DG MENA) at the Global Gateway Forum...
 ------------------------------
 
-Article 10:
+Article 14:
 Title: EU updates list of non-cooperative tax jurisdictions, reinforcing commitment to global tax transparency
 Link: https://taxation-customs.ec.europa.eu/news/eu-updates-list-non-cooperative-tax-jurisdictions-reinforcing-commitment-global-tax-transparency-2025-10-10_en
 Date: 10 October 2025
 Description: EU Finance Ministers today updated the EU list of non-cooperative tax jurisdictions, reaffirming the European Union’s steadfast commitment to promoting tax transparency and fair taxation globally.
-------------------------------
-
-Article 11:
-Title: Visit the Press corner
-Link: https://ec.europa.eu/commission/presscorner/home/en
-Date: No date available.
-Description: No description available.
 ------------------------------
 

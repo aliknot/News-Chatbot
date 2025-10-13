@@ -39,39 +39,46 @@ if news_count_wrapper:
         print("Could not find the h4 tag containing the news count inside the div.")
 else:
     print("Could not find the parent div element.")
+    
+# Find all the news article containers
+article_containers = soup.find_all('div', class_='ecl-content-item-block__item')
 
-# Find all news articles on the page using the unique class selector
-articles = soup.find_all('article', class_='ecl-content-item')
+# Filter the containers to include only those without 'ecl-col-l-6' in their class list
+filtered_containers = [
+    container for container in article_containers 
+    if 'ecl-col-l-6' not in container.get('class', [])
+]
 
 # Define the output file name
 output_file = 'eu_commission_news.txt'
 
 # Open the file in write mode
 with open(output_file, 'w', encoding='utf-8') as f:
-    # Print a header to the file
     f.write("--- News Articles from European Commission ---\n\n")
 
-    # Loop through the found articles and write details to the file
-    for i, article in enumerate(articles, 1):
-        # Find the title and link within each article
-        title_tag = article.find('div', class_='ecl-content-block__title').find('a')
-        title = title_tag.text.strip()
-        link = title_tag['href']
+    # Loop through the filtered containers to extract the articles
+    for i, container in enumerate(filtered_containers, 1):
+        article = container.find('article', class_='ecl-content-item')
+        if article:
+            # Extract the title and link
+            title_tag = article.find('div', class_='ecl-content-block__title').find('a')
+            title = title_tag.text.strip()
+            link = title_tag['href']
 
-        # Find the publication date and add a check
-        date_tag = article.find('time')
-        date = date_tag.text.strip() if date_tag else "No date available."
+            # Extract the publication date
+            date_tag = article.find('time')
+            date = date_tag.text.strip() if date_tag else "No date available."
 
-        # Find the description
-        description_tag = article.find('div', class_='ecl-content-block__description')
-        description = description_tag.text.strip() if description_tag else "No description available."
-        
-        # Write the extracted information to the file
-        f.write(f"Article {i}:\n")
-        f.write(f"Title: {title}\n")
-        f.write(f"Link: {link}\n")
-        f.write(f"Date: {date}\n")
-        f.write(f"Description: {description}\n")
-        f.write("-" * 30 + "\n\n")
+            # Extract the description
+            description_tag = article.find('div', class_='ecl-content-block__description')
+            description = description_tag.text.strip() if description_tag else "No description available."
+            
+            # Write the extracted information to the file
+            f.write(f"Article {i}:\n")
+            f.write(f"Title: {title}\n")
+            f.write(f"Link: {link}\n")
+            f.write(f"Date: {date}\n")
+            f.write(f"Description: {description}\n")
+            f.write("-" * 30 + "\n\n")
 
-print(f"Successfully scraped {len(articles)} news articles and saved them to {output_file}.")
+print(f"Successfully scraped {len(filtered_containers)} news articles and saved them to {output_file}.")
