@@ -39,14 +39,14 @@ def extract_article_data(article):
     date_tag = article.find('time')
     date = date_tag.text.strip() if date_tag else "No date available."
     
-    description_tag = article.find('div', class_='ecl-content-block__description')
-    description = description_tag.text.strip() if description_tag else "No description available."
+    summary_tag = article.find('div', class_='ecl-content-block__description')
+    summary = summary_tag.text.strip() if summary_tag else "No summary available."
     
     return {
         "title": title,
         "link": link,
         "date": date,
-        "description": description
+        "summary": summary
     }
 
 # Main script logic
@@ -84,7 +84,6 @@ if __name__ == "__main__":
             # Step 3: Extract data and store in list
             for article in articles:
                 data = extract_article_data(article)
-                data['page'] = page_num + 1 # Add the page number
                 all_articles_data.append(data)
 
         # Define the output file name
@@ -92,7 +91,7 @@ if __name__ == "__main__":
 
         # Write the data to a CSV file
         with open(output_file, 'w', newline='', encoding='utf-8') as f:
-            fieldnames = ['page', 'title', 'link', 'date', 'description']
+            fieldnames = ['title', 'link', 'date', 'summary']
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(all_articles_data)
