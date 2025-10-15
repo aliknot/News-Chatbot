@@ -4,7 +4,6 @@ import math
 import csv
 import time
 
-# --- Configuration ---
 # Define the base URL and headers
 BASE_URL = "https://commission.europa.eu"
 NEWS_LIST_URL = f"{BASE_URL}/news-and-media/news_en"
@@ -21,16 +20,12 @@ def get_page_content(url, params=None):
         return None
 
 def parse_articles_from_soup(soup):
-    """
-    Parses a BeautifulSoup object to find a list of valid news articles.
-    This function specifically filters out unwanted 'related link' containers.
-    """
+    """Parses a BeautifulSoup object to find a list of valid news articles."""
     articles = []
     article_containers = soup.find_all('div', class_='ecl-content-item-block__item')
     
     for container in article_containers:
         article = container.find('article', class_='ecl-content-item')
-        # Check for the presence of the 'ecl-col-l-6' class to filter out unwanted links.
         if 'ecl-col-l-6' not in container.get('class', []) and article:
             articles.append(article)
     return articles
@@ -56,9 +51,8 @@ def extract_article_summary_data(article_tag):
 
 def scrape_full_description(article_url):
     """
-    Scrapes the full description from an article's page by trying multiple robust selectors.
+    Scrapes the full description from an article's page by trying a wider range of selectors.
     """
-    # Construct the full URL if it's relative
     if not article_url.startswith('http'):
         article_url = f"{BASE_URL}{article_url}"
     
@@ -68,18 +62,22 @@ def scrape_full_description(article_url):
     
     soup = BeautifulSoup(page_content, 'html.parser')
 
-    # List of potential selectors for the main content/description
-    selectors = [
-        'div.ecl-page-header__description-container > p.ecl-page-header__description',
+    description_selectors = [
         'div.ecl-paragraph > p',
         'div.ecl-u-mt-l > p',
         'div#main-content p',
         'div.node-content-block p',
-        'article div.content p'
+        'div.long-text > p',
+        'div.ecl-content-block__description',
+        'main.ecl-u-pb-xl p',
+        'article div.content-wrapper p',
+        'div.ecl-content-block__body p',
+        'div.ecl-container div.ecl-row div.ecl-col-s-12 p'
     ]
     
     full_description = []
-    for selector in selectors:
+    
+    for selector in description_selectors:
         paragraphs = soup.select(selector)
         if paragraphs:
             for p in paragraphs:
@@ -98,7 +96,6 @@ if __name__ == "__main__":
     base_params = {"f[0]": date_range}
 
     try:
-        # Step 1: Get total number of articles to determine pages to crawl
         print("Fetching first page to determine total news count...")
         initial_page_content = get_page_content(NEWS_LIST_URL, params=base_params)
         soup = BeautifulSoup(initial_page_content, 'html.parser')
@@ -112,10 +109,8 @@ if __name__ == "__main__":
         print(f"Total pages to crawl: {pages_to_crawl}")
         print("-" * 30)
 
-        # List to store all scraped data
         all_articles_data = []
 
-        # Step 2: Loop through all pages
         for page_num in range(pages_to_crawl):
             print(f"Scraping articles from Page {page_num + 1}...")
             page_content = get_page_content(NEWS_LIST_URL, params={**base_params, "page": page_num})
@@ -123,14 +118,11 @@ if __name__ == "__main__":
             
             articles_on_page = parse_articles_from_soup(soup)
             
-            # Step 3: Extract summary and full description for each article
             for article_tag in articles_on_page:
                 summary_data = extract_article_summary_data(article_tag)
                 
-                # Scrape the full description from the article's page
                 full_description = scrape_full_description(summary_data['link'])
                 
-                # Combine all data into a single dictionary
                 article_data = {
                     "title": summary_data['title'],
                     "link": summary_data['link'],
@@ -140,10 +132,8 @@ if __name__ == "__main__":
                 }
                 all_articles_data.append(article_data)
                 
-                # Add a small delay to avoid overwhelming the server
                 time.sleep(1)
 
-        # Step 4: Write all data to a CSV file
         output_file = 'eu_commission_news.csv'
         with open(output_file, 'w', newline='', encoding='utf-8') as f:
             fieldnames = ['title', 'link', 'date', 'summary', 'full_description']
