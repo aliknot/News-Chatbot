@@ -3,11 +3,58 @@ from bs4 import BeautifulSoup
 import math
 import csv
 import time
+from playwright.sync_api import sync_playwright
 
 # Define the base URL and headers
 BASE_URL = "https://commission.europa.eu"
 NEWS_LIST_URL = f"{BASE_URL}/news-and-media/news_en"
 HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"}
+
+def scrape_description_with_playwright(article_url, selector_list):
+    """
+    Uses Playwright to render the page, execute JavaScript, and scrape the full description.
+    """
+    print(f"  -> Falling back to Playwright for {article_url}...")
+    
+    # Ensure URL is absolute
+    if not article_url.startswith('http'):
+        article_url = f"{BASE_URL}{article_url}"
+    
+    description = []
+    
+    try:
+        with sync_playwright() as p:
+            # Launch a headless Chromium browser
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            
+            # Go to the URL and wait for the network to be idle, ensuring JS has executed
+            page.goto(article_url, wait_until="networkidle", timeout=30000)
+            
+            # Use the page's content after rendering
+            rendered_html = page.content()
+            browser.close()
+            
+            soup = BeautifulSoup(rendered_html, 'html.parser')
+            
+            # Iterate through the selectors on the rendered HTML
+            for selector in selector_list:
+                paragraphs = soup.select(selector)
+                if paragraphs:
+                    for p in paragraphs:
+                        text = p.text.strip()
+                        if text:
+                            description.append(text)
+                    
+                    if description:
+                        # Return the first successful extraction
+                        return "\n".join(description)
+
+    except Exception as e:
+        print(f"  -> Playwright Error for {article_url}: {e}")
+        
+    return "No full description found (Playwright failed)."
+
 
 def get_page_content(url, params=None):
     """Fetches the HTML content of a given URL."""
@@ -51,47 +98,42 @@ def extract_article_summary_data(article_tag):
 
 def scrape_description(article_url):
     """
-    Scrapes the full description from an article's page by trying a wider range of selectors.
+    Scrapes the full description, first using requests/BeautifulSoup, then falling back to Playwright.
     """
+    # 1. Prepare URL and selectors
     if not article_url.startswith('http'):
-        article_url = f"{BASE_URL}{article_url}"
-    
-    page_content = get_page_content(article_url)
-    if not page_content:
-        return "No full description found."
-    
-    soup = BeautifulSoup(page_content, 'html.parser')
-
-    # Updated list of potential selectors for the main content/description
+        full_article_url = f"{BASE_URL}{article_url}"
+    else:
+        full_article_url = article_url
+        
+    # Consolidated list of potential selectors
     description_selectors = [
-        # 1. Standard article blocks on departmental and main Commission sites
         'div.ecl-paragraph p',
         'div.long-text p',
         'div.oe-text-body p',
         'div.ecl-u-mt-l p',
-        
-        # 2. Specific selectors for official Press Corner releases (ec.europa.eu/commission/presscorner)
         'div#PressContent div.content p',
         'div.ecl-field-type-html-content p',
-        
-        # 3. Competition, Trade, and Finance sites (often short announcements)
         'div.article-content p',
         'div.ecl-field-type-text-long p',
         'div.news-body p',
-        'div.long-text p:not(:has(a))', # Tries to grab body text without trailing links
-        
-        # 4. Eurostat site structure (w/ specific content wrappers)
-        'div.field-name-body p', # Common field name wrapper in Drupal/Eurostat format
+        'div.long-text p:not(:has(a))',
+        'div.field-name-body p',
         'div.field-items p',
-        'div.ecl-col-s-12.ecl-col-m-8 p', # Targets main content area while excluding sidebars
+        'div.ecl-col-s-12.ecl-col-m-8 p',
         'div.ecl-content-block__description p',
-        
-        # 5. Generic Fallback Selectors
         'div#main-content p',
         'article p',
         'main p'
     ]
+
+    # 2. FIRST ATTEMPT: Static scraping with requests
+    page_content = get_page_content(full_article_url)
+    if not page_content:
+        # If the request itself failed (404, timeout, etc.), no need for Playwright.
+        return "No full description found (Request failed)."
     
+    soup = BeautifulSoup(page_content, 'html.parser')
     description = []
     
     for selector in description_selectors:
@@ -104,11 +146,14 @@ def scrape_description(article_url):
             
             if description:
                 return "\n".join(description)
-    
-    return "No full description found."
+
+    # 3. FALLBACK: Dynamic scraping with Playwright
+    # Only fall back if the static scrape yielded no content (likely due to JS loading)
+    return scrape_description_with_playwright(full_article_url, description_selectors)
 
 # --- Main Script Logic ---
 if __name__ == "__main__":
+    
     date_range = "oe_news_publication_date:bt|2025-09-11T19:48:17+02:00|2025-10-11T19:48:17+02:00"
     base_params = {"f[0]": date_range}
 
@@ -117,6 +162,7 @@ if __name__ == "__main__":
         initial_page_content = get_page_content(NEWS_LIST_URL, params=base_params)
         soup = BeautifulSoup(initial_page_content, 'html.parser')
 
+        # Logic to find total news count and pages_to_crawl remains the same
         total_news_tag = soup.find('div', class_='ecl-u-border-bottom ecl-u-border-width-2 ecl-u-d-flex ecl-u-justify-content-between ecl-u-align-items-end').find('h4', class_='ecl-u-type-heading-4 ecl-u-mb-s')
         total_news_text = total_news_tag.find_all('span')[-1].text
         total_news_count = int("".join(filter(str.isdigit, total_news_text)))
