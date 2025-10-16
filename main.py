@@ -49,7 +49,7 @@ def extract_article_summary_data(article_tag):
         "summary": summary
     }
 
-def scrape_full_description(article_url):
+def scrape_description(article_url):
     """
     Scrapes the full description from an article's page by trying a wider range of selectors.
     """
@@ -62,20 +62,33 @@ def scrape_full_description(article_url):
     
     soup = BeautifulSoup(page_content, 'html.parser')
 
+    # Updated list of potential selectors for the main content/description
     description_selectors = [
+        # General content body on most departmental news pages
         'div.ecl-paragraph > p',
-        'div.ecl-u-mt-l > p',
-        'div#main-content p',
-        'div.node-content-block p',
+        'div#main-content div.ecl-paragraph p',
         'div.long-text > p',
-        'div.ecl-content-block__description',
-        'main.ecl-u-pb-xl p',
-        'article div.content-wrapper p',
         'div.ecl-content-block__body p',
-        'div.ecl-container div.ecl-row div.ecl-col-s-12 p'
+        'div.ecl-u-mt-l p',
+        'div.oe-text-body p',
+        'div.ecl-u-mt-l div.ecl-u-mb-2xl p', # A common pattern on main commission news pages
+
+        # Specific selectors for press releases (ec.europa.eu/commission/presscorner)
+        'div.ecl-accordion__panel-text p', # Content within collapsible sections
+        'div#PressContent div.content p',
+
+        # Specific selectors for other sub-domains
+        'div.news-content p', # Found on some older or specific layouts
+        'div.news__content-wrapper p',
+        'div.content-wrapper > p',
+
+        # Catch-all and fallback selectors
+        'div.ecl-container div.ecl-col-s-12 p',
+        'article p',
+        'main p'
     ]
     
-    full_description = []
+    description = []
     
     for selector in description_selectors:
         paragraphs = soup.select(selector)
@@ -83,10 +96,10 @@ def scrape_full_description(article_url):
             for p in paragraphs:
                 text = p.text.strip()
                 if text:
-                    full_description.append(text)
+                    description.append(text)
             
-            if full_description:
-                return "\n".join(full_description)
+            if description:
+                return "\n".join(description)
     
     return "No full description found."
 
@@ -121,14 +134,14 @@ if __name__ == "__main__":
             for article_tag in articles_on_page:
                 summary_data = extract_article_summary_data(article_tag)
                 
-                full_description = scrape_full_description(summary_data['link'])
+                description = scrape_description(summary_data['link'])
                 
                 article_data = {
                     "title": summary_data['title'],
                     "link": summary_data['link'],
                     "date": summary_data['date'],
                     "summary": summary_data['summary'],
-                    "full_description": full_description
+                    "description": description
                 }
                 all_articles_data.append(article_data)
                 
@@ -136,7 +149,7 @@ if __name__ == "__main__":
 
         output_file = 'eu_commission_news.csv'
         with open(output_file, 'w', newline='', encoding='utf-8') as f:
-            fieldnames = ['title', 'link', 'date', 'summary', 'full_description']
+            fieldnames = ['title', 'link', 'date', 'summary', 'description']
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(all_articles_data)
