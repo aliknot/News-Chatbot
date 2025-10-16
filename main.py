@@ -64,26 +64,30 @@ def scrape_description(article_url):
 
     # Updated list of potential selectors for the main content/description
     description_selectors = [
-        # General content body on most departmental news pages
-        'div.ecl-paragraph > p',
-        'div#main-content div.ecl-paragraph p',
-        'div.long-text > p',
-        'div.ecl-content-block__body p',
-        'div.ecl-u-mt-l p',
+        # 1. Standard article blocks on departmental and main Commission sites
+        'div.ecl-paragraph p',
+        'div.long-text p',
         'div.oe-text-body p',
-        'div.ecl-u-mt-l div.ecl-u-mb-2xl p', # A common pattern on main commission news pages
-
-        # Specific selectors for press releases (ec.europa.eu/commission/presscorner)
-        'div.ecl-accordion__panel-text p', # Content within collapsible sections
+        'div.ecl-u-mt-l p',
+        
+        # 2. Specific selectors for official Press Corner releases (ec.europa.eu/commission/presscorner)
         'div#PressContent div.content p',
-
-        # Specific selectors for other sub-domains
-        'div.news-content p', # Found on some older or specific layouts
-        'div.news__content-wrapper p',
-        'div.content-wrapper > p',
-
-        # Catch-all and fallback selectors
-        'div.ecl-container div.ecl-col-s-12 p',
+        'div.ecl-field-type-html-content p',
+        
+        # 3. Competition, Trade, and Finance sites (often short announcements)
+        'div.article-content p',
+        'div.ecl-field-type-text-long p',
+        'div.news-body p',
+        'div.long-text p:not(:has(a))', # Tries to grab body text without trailing links
+        
+        # 4. Eurostat site structure (w/ specific content wrappers)
+        'div.field-name-body p', # Common field name wrapper in Drupal/Eurostat format
+        'div.field-items p',
+        'div.ecl-col-s-12.ecl-col-m-8 p', # Targets main content area while excluding sidebars
+        'div.ecl-content-block__description p',
+        
+        # 5. Generic Fallback Selectors
+        'div#main-content p',
         'article p',
         'main p'
     ]
