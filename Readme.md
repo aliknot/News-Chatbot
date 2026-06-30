@@ -1,4 +1,4 @@
-# 🇪🇺 RAG News Chatbot: European Commission News Analyzer
+# 🇪🇺 RAG News Chatbot: European Commission News Analyzer 
 
 This repository contains a Retrieval-Augmented Generation (RAG) system designed to answer questions based on recent news releases from the official European Commission website (`https://commission.europa.eu/news/`).
 
@@ -16,13 +16,13 @@ The repository is organized into three core components:
 
 ---
 
-## 🎯 Benchmark Objectives
+## 🎯 Benchmark Objectives 
 
 The project's key focus is exploring the performance trade-offs across four different model combinations by changing the components in the RAG architecture:
 
 ### 1. LLM Performance (The Generator)
 
-We compare two state-of-the-art open-source Instruction-Tuned LLMs. Both models are loaded using **4-bit quantization (QLoRA)** via Hugging Face to ensure they fit efficiently on a GPU (e.g., Kaggle T4 or Colab GPU).
+comparison of two state-of-the-art open-source Instruction-Tuned LLMs. Both models are loaded using **4-bit quantization (QLoRA)** via Hugging Face to ensure they fit efficiently on a GPU (e.g., Kaggle T4 or Colab GPU).
 
 | Model                        | Parameter Size | Primary Comparison Point                                   |
 | :--------------------------- | :------------- | :--------------------------------------------------------- |
