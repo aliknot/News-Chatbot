@@ -52,3 +52,10 @@ The notebook includes an Automated Evaluation Loop that measures the three core 
 | **Response Time**                          | **Efficiency:** Time elapsed between query submission and final answer (Latency).              | Should be **Low** (Faster inference is better for user experience).                                      |
 
 The results of these benchmarks will form the basis of the final project presentation slides, detailing the performance trade-offs between the 4 model combinations.
+
+
+## Authors
+
+- [Alireza Fazel](https://github.com/aliknot)
+- [Yasaman Zahedan](https://github.com/YasamanZahedan)
+
